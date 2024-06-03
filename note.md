@@ -126,6 +126,41 @@ const ptype = defineProps(['ptype'])
 
 创建自定义路由配置~/app/router.options.ts，可以替换或新增Nuxt3自动生成的路由
 
+## 路由中间件
+
+路由中间件中有两种方式改变路由目标：
+1、return navigateTo(to,options)，停止当前导航，重定向到插件或中间件中的给定路由，也可以直接调用他来执行页面导航；
+2、return abortNavigation(error)，以错误拒绝当前导航，并可选错误消息
+
+### 命名路由中间件
+
+命名路由中间件配置文件名称规则约定为middleware/*.js，*为路由中间件名称，在页面中通过definePageMeta来明确页面使用那个路由中间件。
+
+### 匿名路由中间件
+
+直接在使用他们的页面中定义，即在definePageMeta方法的middleware中定义。
+
+### 路由验证器 
+
+如果是简单的路由验证逻辑，可以使用路由验证器解决。即在definePageMeta方法的validate中定义，
+如果是复杂的用例，那么推荐使用路由中间件方式。
+
+## 导航
+
+Nuxt3中的导航，分为组件和编程方式。
+
+>注意：Nuxt3的~/server/routes/提供的数据返回，应该按外部链接处理，需要将external属性设置为true。否则在开发npm run dev时请求数据正常，在node或pm2部署后Nuxt3会把此链接当着页面路由访问而出现404错误，需要刷新才能显示数据
+
+### 组件式导航
+
+在应用程序的页面之间导航，可使用<NuxtLink>组件，组件支持内部路由和跳转到外部网址，支持to，href，target，rel，noRel，activeClass，exactActiveClass，replace，ariaCurrentValue，external，prefetch，prefetchedClass，custom等属性设置
+
+### 编程式导航
+
+navigateTo是一个路由器助手函数，允许通过Nuxt应用程序以编程方式导航，支持内部路由和跳转到外部网址。同时也支持router.push的编程方式导航。
+
+navigateTo在服务端和客户端都可用。他可以在插件、中间件中使用，也可以直接调用以执行页面导航
+
 ## 动态引入组件
 
 - 方法一： vue3 resolveComponent
@@ -213,3 +248,9 @@ export default function(){
 ### utils
 
 使用方法同 composables
+
+## 页面过渡
+
+Nuxt利用Vue的<Transition>组件在页面和布局中应用过渡动画转换。
+
+页面过渡动画需要在nuxt.config.ts中配置pageTransition开启，同时需要在app.vue中配置过渡动画样式即可（两处配置的名称要一致)
